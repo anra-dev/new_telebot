@@ -1,7 +1,6 @@
 from datetime import datetime
 from peewee import SqliteDatabase, Model
-from peewee import IntegerField, FloatField, CharField, PrimaryKeyField, DateTimeField, ForeignKeyField, TimestampField, fn
-from peewee import InternalError
+from peewee import CharField, PrimaryKeyField, DateTimeField, ForeignKeyField
 
 sqlite_db = SqliteDatabase('app.db', pragmas={
     'journal_mode': 'wal',
