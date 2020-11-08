@@ -51,7 +51,7 @@ def weather_answer(place:str) ->str:
     try:
         weather_in_place = mgr.weather_at_place(place).weather
     except:
-        return "Введен несущестующий город. Попробуйте еще раз!"
+        return None
     else:
         return (
             f"Погода в городе {place}: {weather_in_place.detailed_status}\n"
@@ -62,25 +62,25 @@ def weather_answer(place:str) ->str:
 
 
 #Погода на завтра
-def weather_tomorrow(place):
+def weather_tomorrow(place:str) ->str:
+    """Формирует ответ с погодой на завтрав городе с названием 'place'
+    в случае если город отсутствует выдет соответствующую информационную строку"""
     mgr = owm.weather_manager()
-    if True:
-        try:
-            forecaster = mgr.forecast_at_place(place, '3h')
-        except:
-            answer = "Введен несущестующий город. Попробуйте еще раз!"
-        else:
-            answer = "Прогноз погоды в городе " + str.title(place) + " на завтра:"+ "\n"
-        for time in [9, 12, 15, 18, 21]:
-            tomorrow_time =  timestamps.tomorrow(time, 0)
-            w = forecaster.get_weather_at(tomorrow_time)
-            answer_str = "В " + str(time) + "-00: " + w.detailed_status
-            answer_str += ", t\xb0: " + str (round(w.temperature('celsius')['temp'])) + " C\xb0"
-            answer_str += ", h: " + str(w.humidity) + " мм рт. ст."
-            deg = w.wind()['deg']
-            answer_str += ", ветер " + deg_word(deg) + " " + str(w.wind()['speed']) + " м/с" + "\n"
-            answer += answer_str
-
+    try:
+        forecaster = mgr.forecast_at_place(place, '3h')
+    except:
+        return None
+    else:
+        answer = f"Прогноз погоды в городе {place} на завтра:\n"
+    for time in [9, 12, 15, 18, 21]:
+        tomorrow_time =  timestamps.tomorrow(time, 0)
+        weather_in_time = forecaster.get_weather_at(tomorrow_time)
+        answer +=  (
+            f"В {time}-00: {weather_in_time.detailed_status}, "
+            f"t\xb0: {round(weather_in_time.temperature('celsius')['temp'])} C\xb0, "
+            f"h: {weather_in_time.humidity} мм рт. ст., "
+            f"ветер {deg_word(weather_in_time.wind()['deg'])} {weather_in_time.wind()['speed']} м/с.\n"
+        )
     return answer
 
 
@@ -107,8 +107,8 @@ def send_weather(message):
     place = str.title(message.text)
     answer = weather_answer(place)
     print(place)
-    if answer == "Введен несущестующий город. Попробуйте еще раз!":
-        bot.send_message(message.chat.id, answer)
+    if answer == None:
+        bot.send_message(message.chat.id, "Введен несущестующий город. Попробуйте еще раз!")
     else:
         bot.send_message(message.chat.id, answer, reply_markup=create_inline_keybord(place))
         bot.send_message(message.chat.id, text='Какой еще город вам интересен?',  reply_markup=create_reply_keybord(message.from_user.id))
@@ -123,7 +123,7 @@ def callback_inline(call):
         if call.message:
             if int(call.data[0]) == 1:
                 answer = weather_answer(place)
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=answer, reply_markup=create_inline_keybord(place))
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,text=answer, reply_markup=create_inline_keybord(place))
             elif int(call.data[0]) == 2:
                 answer = weather_tomorrow(place)
                 bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=answer, reply_markup=create_inline_keybord(place))
