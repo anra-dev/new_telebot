@@ -111,7 +111,7 @@ def send_weather(message):
     else:
         bot.send_message(message.chat.id, answer, reply_markup=create_inline_keybord(place))
         bot.send_message(message.chat.id, text='Какой еще город вам интересен?',  reply_markup=create_reply_keybord(message.from_user.id))
-        db.знерщт(user_id=message.from_user.id, place=place)
+        db.add_subscriber(user_id=message.from_user.id, place=place)
 
 
 #Обработка inline кнопок
