@@ -44,22 +44,23 @@ def deg_word(deg):
         deg_str = "направление не известно"
     return deg_str
 #Погода на текущий момент
-def weather_answer(place):
-    """Формирует ответ с текущей погодой в городе с названием 'place'"""
+def weather_answer(place:str) ->str:
+    """Формирует ответ с текущей погодой в городе с названием 'place'
+    в случае если город отсутствует выдет соответствующую информационную строку"""
     mgr = owm.weather_manager()
-    if True:
-        try:
-            observation = mgr.weather_at_place(place)
-        except:
-            answer = "Введен несущестующий город. Попробуйте еще раз!"
-        else:
-            w = observation.weather
-            answer = "Погода в городе " + place + ": " + w.detailed_status + "\n"
-            answer += "Температура воздуха: " + str (round(w.temperature('celsius')['temp'])) + " C\xb0" + "\n"
-            answer += "Давление: " + str(w.humidity) + " мм рт. ст." + "\n"
-            deg = w.wind()['deg']
-            answer += "Ветер " + deg_word(deg) + " " + str(w.wind()['speed']) + " м/с" + "\n"
-    return answer
+    try:
+        weather_in_place = mgr.weather_at_place(place).weather
+    except:
+        return "Введен несущестующий город. Попробуйте еще раз!"
+    else:
+        return (
+            f"Погода в городе {place}: {weather_in_place.detailed_status}\n"
+            f"Температура воздуха: {round(weather_in_place.temperature('celsius')['temp'])} C\xb0\n"
+            f"Давление: {weather_in_place.humidity}мм рт. ст.\n"
+            f"Ветер {deg_word(weather_in_place.wind()['deg'])} {weather_in_place.wind()['speed']} м/с."
+        )
+
+
 #Погода на завтра
 def weather_tomorrow(place):
     mgr = owm.weather_manager()
