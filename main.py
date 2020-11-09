@@ -44,8 +44,10 @@ def send_welcome(message):
     sti = open('static/welcome.webp', 'rb')
     bot.send_sticker(message.chat.id, sti)
 #Создаем клавиатуру
-    bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name}!\n Я - <b>{1.first_name}</b>, бот показывающий погоду по всему миру!\n Введите название города, погода в котором вас интересует.".format(message.from_user, bot.get_me()),
-        parse_mode='html', reply_markup=create_reply_keybord(message.from_user.id))
+    bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name}!\n Я - <b>{1.first_name}</b>,"
+                                      " бот показывающий погоду по всему миру!\n Введите название города, "
+                                      "погода в котором вас интересует.".format(message.from_user, bot.get_me()),
+                     parse_mode='html', reply_markup=create_reply_keybord(message.from_user.id))
 
 #Обработка текстового сообщения
 @bot.message_handler(content_types=['text'])
@@ -57,7 +59,8 @@ def send_weather(message):
         bot.send_message(message.chat.id, "Введен несущестующий город. Попробуйте еще раз!")
     else:
         bot.send_message(message.chat.id, answer, reply_markup=create_inline_keybord(place))
-        bot.send_message(message.chat.id, text='Какой еще город вам интересен?',  reply_markup=create_reply_keybord(message.from_user.id))
+        bot.send_message(message.chat.id, text='Какой еще город вам интересен?',
+                         reply_markup=create_reply_keybord(message.from_user.id))
         add_log_string(user_id=message.from_user.id, place=place)
 
 #Обработка inline кнопок
@@ -68,24 +71,21 @@ def callback_inline(call):
         if call.message:
             if int(call.data[0]) == 1:
                 answer = weather_answer(place)
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,text=answer, reply_markup=create_inline_keybord(place))
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                      text=answer, reply_markup=create_inline_keybord(place))
             elif int(call.data[0]) == 2:
                 answer = weather_tomorrow(place)
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=answer, reply_markup=create_inline_keybord(place))
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                      text=answer, reply_markup=create_inline_keybord(place))
             elif int(call.data[0]) == 3:
-                sub(chat_id=call.message.chat.id, place=place)
-                answer = weather_tomorrow(place)
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=answer, reply_markup=create_clock_keybord())
+                add_subscription(user_id=call.message.chat.id, place=place)
+                answer = f"Теперь вы будите получать рассылку погоды из {place}"
+                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
+                                      text=answer, reply_markup=create_inline_keybord(place))
+                bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=answer)
 
     except Exception as e:
         print(repr(e))
-
-
-# Подписка
-def sub(chat_id, place):
-    answer = 'Выберите удобное время для получения прогноза погоды на завтра в городе ' + place
-    bot.send_message(chat_id, answer, reply_markup=create_clock_keybord())
-
 
 
 bot.polling(none_stop = True)
