@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*
+from handler import top5_place, top5_place_user
 
-word = 'end'
-text = (f'First string { word }\n'
-        'second string')
-print(text)
+def top5_place_for_key(user_id):
+    """Формирует избранные города на основе топов пользователяб всех пользователей
+     и топа по-умолчанию"""
+    top5_default = ('Москва', 'Санкт Петербург', 'Минск', 'Киев', 'Нур-Султан')
+    return (top5_place_user(user_id) + tuple(i for i in top5_place() if i not in top5_place_user(user_id)) +
+            tuple(i for i in top5_default if i not in top5_place_user(user_id) + top5_place()))[:5]
 
-# f'''Погода в городе { place }: { w.detailed_status }
-# Температура воздуха: { round(w.temperature('celsius')['temp']) }C\xb0
-# Давление: { w.humidity }мм рт. ст.
-# Ветер { deg_word(w.wind()['deg']) } { w.wind()['speed'] } м/с'''
-#
-# f'''Погода в городе { place }: { weather_status }
-# Температура воздуха: { temperature_air }C\xb0
-# Давление: { humidity }мм рт. ст.
-# Ветер { wind_direction } { wind_speed } м/с'''
+
+print(top5_place_for_key('123456'))

@@ -1,5 +1,3 @@
-
-import peewee
 from peewee import IntegrityError, fn
 from models import TelegramUser, LogRequest
 
@@ -10,7 +8,6 @@ def add_telegram_user(user_id):
     )
     row.save()
 
-
 def add_log_string(user_id, place):
     try:
         add_telegram_user(user_id)
@@ -19,14 +16,20 @@ def add_log_string(user_id, place):
     telegram_user = TelegramUser.select().where(TelegramUser.user_id == user_id.strip()).get()
     row = LogRequest(
         telegram_user=telegram_user,
-        place=place.upper().strip(),
+        place=place.title().strip(),
     )
     row.save()
 
 def add_subscription(user_id, place):
     telegram_user = TelegramUser.get(TelegramUser.user_id == user_id)
-    telegram_user.subscription = place.upper().strip()
+    telegram_user.subscription = place.title().strip()
     telegram_user.save()
+
+def del_subscription_all(user_id):
+    pass
+
+def del_subscription(user_id, place):
+    pass
 
 def top5_place():
     query = (LogRequest
