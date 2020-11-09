@@ -4,7 +4,7 @@ from models import TelegramUser, LogRequest
 
 def add_telegram_user(user_id):
     row = TelegramUser(
-        user_id=user_id.strip(),
+        user_id=user_id,
     )
     row.save()
 
@@ -13,7 +13,7 @@ def add_log_string(user_id, place):
         add_telegram_user(user_id)
     except IntegrityError as de:
         pass
-    telegram_user = TelegramUser.select().where(TelegramUser.user_id == user_id.strip()).get()
+    telegram_user = TelegramUser.select().where(TelegramUser.user_id == user_id).get()
     row = LogRequest(
         telegram_user=telegram_user,
         place=place.title().strip(),

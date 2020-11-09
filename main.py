@@ -2,20 +2,22 @@
 
 import telebot
 from telebot import types
-from sql import SQL
 from weather import weather_answer, weather_tomorrow
+from handler import add_log_string, add_subscription, top5_place, top5_place_user
 #Инициализация бота
 bot = telebot.TeleBot("1277471589:AAGLrKSri3RxwW03Yw_kvx0r8pgUpdUtrE8")
 
-#Инициализация базы
-db = SQL('db.db')
 
-time_key = []
-for i in range(1, 25):
-    time_key.append(str(i) + '-00')
+
+
+def top5_place_for_key(user_id):
+    """Формирует избранные города на основе топов пользователя,
+    всех пользователейи топа по-умолчанию"""
+    top5_default = ('Москва', 'Санкт Петербург', 'Минск', 'Киев', 'Нур-Султан')
+    return (top5_place_user(user_id) + tuple(i for i in top5_place() if i not in top5_place_user(user_id)) +
+            tuple(i for i in top5_default if i not in top5_place_user(user_id) + top5_place()))[:5]
 
 #РАБОТА С БОТОМ
-
 #Обработка комнатды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -25,11 +27,11 @@ def send_welcome(message):
     bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name}!\n Я - <b>{1.first_name}</b>, бот показывающий погоду по всему миру!\n Введите название города, погода в котором вас интересует.".format(message.from_user, bot.get_me()),
         parse_mode='html', reply_markup=create_reply_keybord(message.from_user.id))
 
-#Обработка текстового сообщения
-@bot.message_handler(func=lambda message: message.text in time_key and message.content_type == 'text')
-def sub_time(message):
-    answer = "Да ладно!"
-    bot.send_message(message.chat.id, answer)
+# #Обработка текстового сообщения
+# @bot.message_handler(func=lambda message: message.text in time_key and message.content_type == 'text')
+# def sub_time(message):
+#     answer = "Да ладно!"
+#     bot.send_message(message.chat.id, answer)
 
 
 @bot.message_handler(content_types=['text'])
@@ -42,8 +44,7 @@ def send_weather(message):
     else:
         bot.send_message(message.chat.id, answer, reply_markup=create_inline_keybord(place))
         bot.send_message(message.chat.id, text='Какой еще город вам интересен?',  reply_markup=create_reply_keybord(message.from_user.id))
-        db.add_subscriber(user_id=message.from_user.id, place=place)
-
+        add_log_string(user_id=message.from_user.id, place=place)
 
 #Обработка inline кнопок
 @bot.callback_query_handler(func=lambda call:True)
@@ -84,12 +85,12 @@ def create_inline_keybord(place):
 
 def create_reply_keybord(user_id):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    top_place = db.top_place(str(user_id))
-    item1 = types.KeyboardButton(top_place[0])
-    item2 = types.KeyboardButton(top_place[1])
-    item3 = types.KeyboardButton(top_place[2])
-    item4 = types.KeyboardButton(top_place[3])
-    item5 = types.KeyboardButton(top_place[4])
+    keys_name = top5_place_for_key(user_id)
+    item1 = types.KeyboardButton(keys_name[0])
+    item2 = types.KeyboardButton(keys_name[1])
+    item3 = types.KeyboardButton(keys_name[2])
+    item4 = types.KeyboardButton(keys_name[3])
+    item5 = types.KeyboardButton(keys_name[4])
     markup.add(item1, item2, item3, item4, item5)
     return markup
 
