@@ -14,7 +14,7 @@ class BaseModel(Model):
 
 class TelegramUser(BaseModel):
     id = PrimaryKeyField(null=False)
-    user_id = CharField(max_length=100, unique=True)
+    user_id = IntegerField(unique=True)
     subscription = CharField(max_length=100, null=True)
 
     class Meta:

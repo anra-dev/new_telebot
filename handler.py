@@ -1,4 +1,4 @@
-from peewee import IntegrityError, fn
+from peewee import IntegrityError, DoesNotExist, fn
 from models import TelegramUser, LogRequest
 
 
@@ -41,20 +41,24 @@ def top5_place():
     return tuple(map(lambda item: item.place, query))
 
 def top5_place_user(user_id):
-    telegram_user = TelegramUser.get(TelegramUser.user_id == user_id)
-    query = (LogRequest
-             .select(LogRequest.place, fn.COUNT(LogRequest.place))
-             .where(LogRequest.telegram_user == telegram_user)
-             .group_by(LogRequest.place)
-             .order_by(fn.COUNT(LogRequest.place).desc())
-             .limit(5))
+    try:
+        telegram_user = TelegramUser.get(TelegramUser.user_id == user_id)
+        query = (LogRequest
+                 .select(LogRequest.place, fn.COUNT(LogRequest.place))
+                 .where(LogRequest.telegram_user == telegram_user)
+                 .group_by(LogRequest.place)
+                 .order_by(fn.COUNT(LogRequest.place).desc())
+                 .limit(5))
+    except DoesNotExist:
+        return ()
     return tuple(map(lambda item: item.place, query))
 
 
 if __name__ == '__main__':
-    print(top5_place_user('123458'))
+    #add_log_string(123456, 'Рига')
+    print(top5_place_user(123458))
     print(top5_place())
-    print((top5_place_user(123458) + top5_place())[:5])
+    # print((top5_place_user(123458) + top5_place())[:5])
     # add_log_string('123457', 'волгоград')
     # add_log_string('123457', 'волгоград')
     # add_log_string('123457', 'саратов')

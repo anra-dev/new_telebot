@@ -8,8 +8,6 @@ from handler import add_log_string, add_subscription, top5_place, top5_place_use
 bot = telebot.TeleBot("1277471589:AAGLrKSri3RxwW03Yw_kvx0r8pgUpdUtrE8")
 
 
-
-
 def top5_place_for_key(user_id):
     """Формирует избранные города на основе топов пользователя,
     всех пользователейи топа по-умолчанию"""
