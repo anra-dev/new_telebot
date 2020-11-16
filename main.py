@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-
 import telebot
 from telebot import types
 from weather import weather_answer, weather_tomorrow
 from handler import add_log_string, add_subscription, top5_place, top5_place_user
+
 #Инициализация бота
 bot = telebot.TeleBot("1277471589:AAGLrKSri3RxwW03Yw_kvx0r8pgUpdUtrE8")
-
 
 #Создаем клавиатуры
 def top5_place_for_key(user_id):
@@ -41,13 +40,12 @@ def create_reply_keybord(user_id):
 #Обработка комнатды /start
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    sti = open('static/welcome.webp', 'rb')
-    bot.send_sticker(message.chat.id, sti)
-#Создаем клавиатуру
-    bot.send_message(message.chat.id, "Добро пожаловать, {0.first_name}!\n Я - <b>{1.first_name}</b>,"
-                                      " бот показывающий погоду по всему миру!\n Введите название города, "
-                                      "погода в котором вас интересует.".format(message.from_user, bot.get_me()),
-                     parse_mode='html', reply_markup=create_reply_keybord(message.from_user.id))
+    with open('static/welcome.webp', 'rb') as sti:
+        bot.send_sticker(message.chat.id, sti)
+    first_message = f"Добро пожаловать, {message.from_user.first_name}!\n Я - <b>{bot.get_me().first_name}</b>, бот " \
+                    f"показывающий погоду по всему миру!\n Введите название города, погода в котором вас интересует."
+    bot.send_message(message.chat.id, text=first_message, parse_mode='html',
+                     reply_markup=create_reply_keybord(message.from_user.id))
 
 #Обработка текстового сообщения
 @bot.message_handler(content_types=['text'])
@@ -79,9 +77,9 @@ def callback_inline(call):
                                       text=answer, reply_markup=create_inline_keybord(place))
             elif int(call.data[0]) == 3:
                 add_subscription(user_id=call.message.chat.id, place=place)
-                answer = f"Теперь вы будите получать рассылку погоды из {place}"
-                bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id,
-                                      text=answer, reply_markup=create_inline_keybord(place))
+                answer = f"Вы подписаны на получение погоды: {place}. Каждый вечер вы будите получать прогноз " \
+                         f"на следующий день в этом месте"
+                bot.send_message(call.message.chat.id, text=answer, reply_markup=create_reply_keybord(call.message.chat.id))
                 bot.answer_callback_query(callback_query_id=call.id, show_alert=False, text=answer)
 
     except Exception as e:

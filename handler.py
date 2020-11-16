@@ -52,25 +52,3 @@ def top5_place_user(user_id):
     except DoesNotExist:
         return ()
     return tuple(map(lambda item: item.place, query))
-
-
-if __name__ == '__main__':
-    #add_log_string(123456, 'Рига')
-    print(top5_place_user(123458))
-    print(top5_place())
-    # print((top5_place_user(123458) + top5_place())[:5])
-    # add_log_string('123457', 'волгоград')
-    # add_log_string('123457', 'волгоград')
-    # add_log_string('123457', 'саратов')
-    # add_log_string('123457', 'ростов')
-    # add_log_string('123457', 'москва')
-    # add_log_string('123457', 'волгоград')
-    # add_log_string('123457', 'саратов')
-    # add_log_string('123457', 'ростов')
-    # add_log_string('123457', 'москва')
-    # add_log_string('123457', 'саратов')
-    # add_log_string('123457', 'ростов')
-    # add_log_string('123458', 'сургут')
-    # add_log_string('123458', 'тува')
-    # add_log_string('123458', 'тува')
-    # add_log_string('123458', 'ростов')
