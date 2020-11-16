@@ -2,7 +2,7 @@ from datetime import datetime
 from peewee import SqliteDatabase, Model
 from peewee import CharField, PrimaryKeyField, DateTimeField, ForeignKeyField, IntegerField
 
-sqlite_db = SqliteDatabase('app.db', pragmas={
+sqlite_db = SqliteDatabase('database/app.db', pragmas={
     'journal_mode': 'wal',
     'cache_size': -1024 * 64})
 

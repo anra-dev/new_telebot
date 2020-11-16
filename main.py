@@ -52,7 +52,6 @@ def send_welcome(message):
 def send_weather(message):
     place = str.title(message.text)
     answer = weather_answer(place)
-    print(place)
     if answer == 'Place error':
         bot.send_message(message.chat.id, "Введен несущестующий город. Попробуйте еще раз!")
     else:
