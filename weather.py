@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 #Инициализация погоды
 from pyowm import OWM
 from pyowm.utils import timestamps
 from pyowm.utils.config import get_default_config
+import apikeys
+
 config_dict = get_default_config()
 config_dict['language'] = 'ru'  # your language here
-owm = OWM('712128c315bc1ea671afb8f073ef8f85')  # You MUST provide a valid API key
+owm = OWM(apikeys.owm_apikey)  # You MUST provide a valid API key
 
 #РАБОТА С ПОГОДОЙ
 #Переводим показатель "Напрвление ветра" из градусов в читаемый формат

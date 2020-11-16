@@ -3,9 +3,10 @@ import telebot
 from telebot import types
 from weather import weather_answer, weather_tomorrow
 from handler import add_log_string, add_subscription, top5_place, top5_place_user
+import apikeys
 
 #Инициализация бота
-bot = telebot.TeleBot("1277471589:AAGLrKSri3RxwW03Yw_kvx0r8pgUpdUtrE8")
+bot = telebot.TeleBot(apikeys.bot_apikey)
 
 #Создаем клавиатуры
 def top5_place_for_key(user_id):

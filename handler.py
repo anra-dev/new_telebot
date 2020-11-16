@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from peewee import IntegrityError, DoesNotExist, fn
 from models import TelegramUser, LogRequest
 
