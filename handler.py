@@ -9,6 +9,7 @@ def add_telegram_user(user_id):
     )
     row.save()
 
+
 def add_log_string(user_id, place):
     try:
         add_telegram_user(user_id)
@@ -21,16 +22,20 @@ def add_log_string(user_id, place):
     )
     row.save()
 
+
 def add_subscription(user_id, place):
     telegram_user = TelegramUser.get(TelegramUser.user_id == user_id)
     telegram_user.subscription = place.title().strip()
     telegram_user.save()
 
+
 def del_subscription_all(user_id):
     pass
 
+
 def del_subscription(user_id, place):
     pass
+
 
 def top5_place():
     query = (LogRequest
@@ -40,6 +45,7 @@ def top5_place():
              .order_by(fn.COUNT(LogRequest.place).desc())
              .limit(5))
     return tuple(map(lambda item: item.place, query))
+
 
 def top5_place_user(user_id):
     try:
